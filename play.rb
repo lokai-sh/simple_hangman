@@ -2,8 +2,8 @@
 class Hangman
 
   def initialize
-    @letters = ('a'..'z').to_a
-    @words = words.sample
+    #@letters = ('a'..'z').to_a
+    @words = words.sample  #randomly pick one of the array items
     @attempts = 7
     @word_teaser = ""
     @guesses = []
