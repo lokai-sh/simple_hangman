@@ -6,7 +6,7 @@ class Hangman
     @words = words.sample  #randomly pick one of the array items
     @attempts = 7
     @word_teaser = ""
-    @guesses = []
+    @previous_guesses = []
 
     @words.first.size.times do
       @word_teaser += "_ "
@@ -28,7 +28,7 @@ class Hangman
     #Prompt user for a letter
     puts "New Game started...To exit the game at any time type 'exit'"
     puts "Your word is #{@words.first.size} letters long."
-    print_teaser
+    puts @word_teaser
 
     puts "Clue: #{ @words.last }"
     make_guess
@@ -39,61 +39,50 @@ class Hangman
       puts "Enter a letter"
       guess = gets.chomp.downcase
 
-      #validate if the letter is part of the word
-      good_guess = @words.first.include? guess
-
-      if guess == "exit"
+      case
+      when guess == "exit"
         puts "Thank-you for playing!"
-      elsif @guesses.include? guess
+      when (@previous_guesses.include? guess)
           puts "You have already guess that letter."
-          puts "Guesses: #{@guesses.inspect}"
+          puts "Guesses: #{@previous_guesses.inspect}"
           make_guess
-      elsif good_guess
-        puts "You are correct!"
-        add_to_guesses guess
-        print_teaser guess
-
+      when (@words.first.include? guess)
+        update_teaser(guess) unless guess.nil?
         if @words.first == @word_teaser.split.join
           puts "Way to go! You guessed the word!"
         else
+          puts "Good Guess!"
+          add_to_previous_guesses guess
+          puts @word_teaser
           make_guess
         end
       else
-        puts "Bad Guess"
-        add_to_guesses guess
         @attempts -= 1
         if @attempts == 0
-          puts "Sorry you have no more attempts. Game Over!"
+          puts "Incorrect Guess! Sorry you have no more attempts. Game Over!"
         else
-          puts "Sorry... you have #{ @attempts } lives left. Try Again!"
+          puts "Incorrect Guess! You have #{ @attempts } lives left. Try Again!"
+          add_to_previous_guesses guess
           make_guess
-        end
+       end
       end
     else
       puts "Game Over!"
     end
-    
   end
 
-  def add_to_guesses last_guess
-    puts "Add to guesses"
-    @guesses << last_guess
+  def add_to_previous_guesses last_guess
+    @previous_guesses << last_guess
   end
-
-  def print_teaser last_guess = nil
-    update_teaser(last_guess) unless last_guess.nil?
-    puts @word_teaser
-  end
-
+  
+  # replace blank values with letter if they match a letter in the word we are guessing
   def update_teaser last_guess
       new_teaser = @word_teaser.split
       new_teaser.each_with_index do |letter, index|
-        # replace blank values with letter if they match a letter in the word we are guessing
         if letter == "_" && @words.first[index] == last_guess
           new_teaser[index] = last_guess
         end
       end
-
       @word_teaser = new_teaser.join(' ')
   end
 
