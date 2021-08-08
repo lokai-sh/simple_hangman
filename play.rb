@@ -45,7 +45,7 @@ class Hangman
       when (@previous_guesses.include? guess)
           puts "You have already guess that letter."
           puts "Guesses: #{@previous_guesses.inspect}"
-          make_guess
+          prompt_for_guess
       when (@words.first.include? guess)
         update_teaser(guess) unless guess.nil?
         if @words.first == @word_teaser.split.join
@@ -53,8 +53,7 @@ class Hangman
         else
           puts "Good Guess!"
           add_to_previous_guesses guess
-          puts @word_teaser
-          make_guess
+          prompt_for_guess
         end
       else
         @attempts -= 1
@@ -63,7 +62,7 @@ class Hangman
         else
           puts "Incorrect Guess! You have #{ @attempts } lives left. Try Again!"
           add_to_previous_guesses guess
-          make_guess
+          prompt_for_guess
        end
       end
     else
@@ -71,10 +70,15 @@ class Hangman
     end
   end
 
+  def prompt_for_guess
+    puts @word_teaser
+    make_guess
+  end
+
   def add_to_previous_guesses last_guess
     @previous_guesses << last_guess
   end
-  
+
   # replace blank values with letter if they match a letter in the word we are guessing
   def update_teaser last_guess
       new_teaser = @word_teaser.split
